@@ -1,43 +1,41 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // Initialize an empty array for tasks
+function addTask() {
+    let taskInput = document.getElementById("task");
+    let taskText = taskInput.value;
+    if (taskText === "") {
+        alert("Please enter a task");
+        return;
+    }
+
+    let taskList = document.getElementById("taskList");
+    let newTask = document.createElement("div");
+    newTask.textContent = taskText;
+
+    taskList.appendChild(newTask);
+    taskInput.value = ""; // Clear the input field
+
+    saveTasks(); // Save tasks to local storage
+}
+
+function saveTasks() {
+    let taskList = document.getElementById("taskList");
     let tasks = [];
-
-    // Load tasks from local storage if available
-    if (localStorage.getItem("tasks")) {
-        tasks = JSON.parse(localStorage.getItem("tasks"));
+    for (let i = 0; i < taskList.children.length; i++) {
+        tasks.push(taskList.children[i].textContent);
     }
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
 
-    // Function to add a task
-    function addTask() {
-        const taskInput = document.getElementById("task");
-        const task = taskInput.value;
-
-        if (task.trim() === "") {
-            alert("Please enter a task.");
-            return;
+function loadTasks() {
+    let taskList = document.getElementById("taskList");
+    let tasks = JSON.parse(localStorage.getItem("tasks"));
+    if (tasks) {
+        for (let i = 0; i < tasks.length; i++) {
+            let newTask = document.createElement("div");
+            newTask.textContent = tasks[i];
+            taskList.appendChild(newTask);
         }
-
-        tasks.push(task);
-        localStorage.setItem("tasks", JSON.stringify(tasks));
-        taskInput.value = "";
-        displayTasks();
     }
+}
 
-    // Function to display tasks
-    function displayTasks() {
-        const taskList = document.getElementById("taskList");
-        taskList.innerHTML = "";
-
-        tasks.forEach(task => {
-            const li = document.createElement("li");
-            li.textContent = task;
-            taskList.appendChild(li);
-        });
-    }
-
-    // Display tasks when the page loads
-    displayTasks();
-
-    // Attach addTask function to the button
-    document.querySelector("button").addEventListener("click", addTask);
-});
+// Load tasks when the page loads
+window.onload = loadTasks;
